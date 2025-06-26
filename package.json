@@ -2,6 +2,7 @@
   "name": "loduchat",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://arjunbishnoi1.github.io/LoduChat",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,7 +12,9 @@
     "setup": "node setup-firebase.js",
     "deploy": "node deploy.js",
     "vercel": "vercel",
-    "vercel:prod": "vercel --prod"
+    "vercel:prod": "vercel --prod",
+    "build:static": "next build",
+    "deploy:gh": "npm run build:static && touch out/.nojekyll && git add out/ && git commit -m \"Deploy to GitHub Pages\" && git subtree push --prefix out origin gh-pages"
   },
   "dependencies": {
     "@firebase/firestore": "^4.7.17",

@@ -6,6 +6,7 @@ import { collection, onSnapshot, query, where, orderBy } from "firebase/firestor
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const user = useAuth();
@@ -23,8 +24,7 @@ export default function ProfilePage() {
     // Get user's messages
     const messagesQuery = query(
       collection(db, "messages"),
-      where("userId", "==", user.uid),
-      orderBy("timestamp", "desc")
+      where("userId", "==", user.uid)
     );
 
     // Get messages where user is tagged
@@ -91,9 +91,11 @@ export default function ProfilePage() {
       <div className="bg-gray-900 border border-green-400 rounded-lg p-6 mb-6">
         <div className="flex items-center space-x-4 mb-4">
           {user.photoURL && (
-            <img 
+            <Image 
               src={user.photoURL} 
               alt="Profile" 
+              width={80}
+              height={80}
               className="w-20 h-20 rounded-full border-4 border-green-400"
             />
           )}

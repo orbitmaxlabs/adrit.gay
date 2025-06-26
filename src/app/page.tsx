@@ -6,6 +6,7 @@ import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import LoadingSpinner from "../components/LoadingSpinner";
+import Image from "next/image";
 
 const predefinedMessages = [
   "Bhai tu toh lodu hai! 😂",
@@ -39,6 +40,8 @@ export default function Home() {
         ...doc.data()
       }));
       setMessages(msgs);
+    }, (error) => {
+      console.error("Error listening to messages:", error);
     });
 
     // Listen to online users
@@ -49,6 +52,8 @@ export default function Home() {
         ...doc.data()
       }));
       setOnlineUsers(users);
+    }, (error) => {
+      console.error("Error listening to users:", error);
     });
 
     return () => {
@@ -105,9 +110,11 @@ export default function Home() {
       <div className="flex justify-between items-center mb-6 border-b border-green-400 pb-4">
         <div className="flex items-center space-x-3">
           {user.photoURL && (
-            <img 
+            <Image 
               src={user.photoURL} 
               alt="Profile" 
+              width={40}
+              height={40}
               className="w-10 h-10 rounded-full border-2 border-green-400"
             />
           )}
@@ -161,9 +168,11 @@ export default function Home() {
           <div key={message.id} className="mb-4">
             <div className="flex items-start space-x-3">
               {message.userPhoto && (
-                <img 
+                <Image 
                   src={message.userPhoto} 
                   alt="User" 
+                  width={32}
+                  height={32}
                   className="w-8 h-8 rounded-full border border-green-400"
                 />
               )}

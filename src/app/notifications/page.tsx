@@ -4,6 +4,7 @@ import { useAuth } from "../auth-context";
 import { db } from "../../firebase";
 import { collection, onSnapshot, query, orderBy, where } from "firebase/firestore";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import Image from "next/image";
 
 export default function NotificationsPage() {
   const user = useAuth();
@@ -17,9 +18,7 @@ export default function NotificationsPage() {
     const q = query(
       collection(db, "messages"),
       where("text", ">=", `@${user.displayName || user.email}`),
-      where("text", "<=", `@${user.displayName || user.email}\uf8ff`),
-      orderBy("text"),
-      orderBy("timestamp", "desc")
+      where("text", "<=", `@${user.displayName || user.email}\uf8ff`)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -46,7 +45,7 @@ export default function NotificationsPage() {
           <div className="text-3xl">🔔</div>
           <div>
             <div className="font-bold text-2xl text-pink-400">Notifications</div>
-            <div className="text-sm text-green-300">You've been tagged!</div>
+            <div className="text-sm text-green-300">You&apos;ve been tagged!</div>
           </div>
         </div>
         <div className="text-right">
@@ -63,16 +62,18 @@ export default function NotificationsPage() {
           <div className="text-center py-8">
             <div className="text-4xl mb-4">😴</div>
             <div className="text-xl font-bold text-yellow-400 mb-2">No notifications yet!</div>
-            <div className="text-sm text-green-300">You'll see notifications here when someone tags you.</div>
+            <div className="text-sm text-green-300">You&apos;ll see notifications here when someone tags you.</div>
           </div>
         ) : (
           notifications.map((notification) => (
             <div key={notification.id} className="bg-gray-900 border border-green-400 rounded-lg p-4 hover:bg-gray-800 transition-colors">
               <div className="flex items-start space-x-3">
                 {notification.userPhoto && (
-                  <img 
+                  <Image 
                     src={notification.userPhoto} 
                     alt="User" 
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full border border-green-400"
                   />
                 )}
