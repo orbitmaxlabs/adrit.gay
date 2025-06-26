@@ -1,0 +1,98 @@
+body {
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  background: linear-gradient(45deg, #0099cc, #ffcc00);
+  color: #000;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: #333;
+  color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+header a {
+  color: #fff;
+  text-decoration: none;
+}
+
+#chat-container {
+  display: flex;
+  height: calc(100vh - 60px);
+}
+
+#users {
+  width: 200px;
+  background: #f0f0f0;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+#messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  padding: 10px;
+}
+
+#messages-list {
+  list-style: none;
+  padding: 0;
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+#message-form {
+  display: flex;
+}
+
+#message-input {
+  flex: 1;
+  padding: 5px;
+  font-size: 14px;
+}
+
+button {
+  padding: 5px 10px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-box {
+  background: #fff;
+  padding: 20px;
+  border: 3px solid #333;
+}
+
+.login-box h1 {
+  margin-top: 0;
+}
+
+.login-box input {
+  display: block;
+  margin-bottom: 10px;
+  padding: 5px;
+  width: 200px;
+}
+
+.error {
+  color: red;
+}
