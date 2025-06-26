@@ -4,8 +4,8 @@ const nextConfig = {
   images: {
     unoptimized: true
   },
-  basePath: '/LoduChat',
-  assetPrefix: '/LoduChat/',
+  basePath: '/adrit.gay',
+  assetPrefix: '/adrit.gay/',
   trailingSlash: true
 };
 

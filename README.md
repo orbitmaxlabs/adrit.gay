@@ -14,7 +14,7 @@ A fun, retro-styled chat application built with Next.js and Firebase. Features G
 
 ## 🚀 Live Demo
 
-Visit: [https://arjunbishnoi1.github.io/LoduChat](https://arjunbishnoi1.github.io/LoduChat)
+Visit: [https://orbitmaxlabs.github.io/adrit.gay](https://orbitmaxlabs.github.io/adrit.gay)
 
 ## 🛠️ Tech Stack
 
@@ -27,8 +27,8 @@ Visit: [https://arjunbishnoi1.github.io/LoduChat](https://arjunbishnoi1.github.i
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/arjunbishnoi1/LoduChat.git
-   cd LoduChat
+   git clone https://github.com/orbitmaxlabs/adrit.gay.git
+   cd adrit.gay
    ```
 
 2. **Install dependencies**
