@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Setup Helper</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .step h3 {
+            color: #007bff;
+            margin-top: 0;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        .output {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            display: none;
+        }
+        .copy-btn {
+            background: #6c757d;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background: #545b62;
+        }
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Firebase Setup Helper</h1>
+        
+        <div class="instructions">
+            <strong>Instructions:</strong>
+            <ol>
+                <li>Go to <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                <li>Create a new project or select existing one</li>
+                <li>Go to Project Settings > General > Your apps</li>
+                <li>Click "Add app" > Web app</li>
+                <li>Copy the config values and paste them below</li>
+            </ol>
+        </div>
+
+        <form id="firebaseForm">
+            <div class="form-group">
+                <label for="apiKey">API Key:</label>
+                <input type="text" id="apiKey" name="apiKey" placeholder="AIzaSyC..." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="authDomain">Auth Domain:</label>
+                <input type="text" id="authDomain" name="authDomain" placeholder="your-project.firebaseapp.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="projectId">Project ID:</label>
+                <input type="text" id="projectId" name="projectId" placeholder="your-project-id" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="storageBucket">Storage Bucket:</label>
+                <input type="text" id="storageBucket" name="storageBucket" placeholder="your-project.appspot.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="messagingSenderId">Messaging Sender ID:</label>
+                <input type="text" id="messagingSenderId" name="messagingSenderId" placeholder="123456789" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="appId">App ID:</label>
+                <input type="text" id="appId" name="appId" placeholder="1:123456789:web:abcdef" required>
+            </div>
+            
+            <button type="submit" class="btn btn-success">Generate .env.local Content</button>
+        </form>
+
+        <div id="output" class="output"></div>
+        
+        <div class="step">
+            <h3>Next Steps:</h3>
+            <ol>
+                <li>Copy the generated content above</li>
+                <li>Create a file called <code>.env.local</code> in your project root</li>
+                <li>Paste the content into <code>.env.local</code></li>
+                <li>Restart your development server: <code>npm run dev</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('firebaseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const config = {
+                apiKey: formData.get('apiKey'),
+                authDomain: formData.get('authDomain'),
+                projectId: formData.get('projectId'),
+                storageBucket: formData.get('storageBucket'),
+                messagingSenderId: formData.get('messagingSenderId'),
+                appId: formData.get('appId')
+            };
+            
+            const envContent = `# Firebase Configuration
+# Generated by Firebase Setup Helper
+
+NEXT_PUBLIC_FIREBASE_API_KEY=${config.apiKey}
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${config.authDomain}
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=${config.projectId}
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${config.storageBucket}
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${config.messagingSenderId}
+NEXT_PUBLIC_FIREBASE_APP_ID=${config.appId}
+
+# After setting up Firebase:
+# 1. Enable Authentication > Sign-in method > Google
+# 2. Enable Firestore Database > Create database
+# 3. Set Firestore rules to allow authenticated users`;
+            
+            const output = document.getElementById('output');
+            output.textContent = envContent;
+            output.style.display = 'block';
+            
+            // Add copy button
+            const copyBtn = document.createElement('button');
+            copyBtn.textContent = 'Copy to Clipboard';
+            copyBtn.className = 'copy-btn';
+            copyBtn.onclick = function() {
+                navigator.clipboard.writeText(envContent).then(function() {
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy to Clipboard';
+                    }, 2000);
+                });
+            };
+            output.appendChild(copyBtn);
+        });
+    </script>
+</body>
+</html> 
