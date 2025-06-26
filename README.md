@@ -2,7 +2,7 @@
 
 A fun, retro-styled chat application built with Next.js and Firebase. Features Google Sign-In, real-time messaging, and a unique "gaali" (fun insults) system!
 
-<!-- DEPLOYMENT TRIGGER -->
+<!-- DEPLOYMENT TRIGGER - Force new build -->
 
 ## 🌟 Features
 
