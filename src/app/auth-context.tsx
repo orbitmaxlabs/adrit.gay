@@ -28,14 +28,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
       setError(null);
       
+      // If user is not authenticated and not already on signin/login page
       if (!u && pathname !== "/signin" && pathname !== "/login") {
-        console.log("AuthProvider: Redirecting to signin");
+        console.log("AuthProvider: No user, redirecting to signin");
         router.replace("/signin");
       }
-      if (u && (pathname === "/signin" || pathname === "/login")) {
-        console.log("AuthProvider: Redirecting to home");
+      // If user is authenticated and on signin/login page, redirect to home
+      else if (u && (pathname === "/signin" || pathname === "/login")) {
+        console.log("AuthProvider: User authenticated, redirecting to home");
         router.replace("/");
       }
+      // If user is authenticated, they can stay on any page (including root /)
     }, (error) => {
       console.error("AuthProvider: Firebase auth error", error);
       setError(error.message);
