@@ -4,8 +4,6 @@ const nextConfig = {
   images: {
     unoptimized: true
   },
-  basePath: '/adrit.gay',
-  assetPrefix: '/adrit.gay/',
   trailingSlash: true
 };
 

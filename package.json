@@ -2,7 +2,7 @@
   "name": "loduchat",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://orbitmaxlabs.github.io/adrit.gay",
+  "homepage": "https://adrit.gay",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
