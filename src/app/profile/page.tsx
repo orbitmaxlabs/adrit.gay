@@ -60,7 +60,12 @@ export default function ProfilePage() {
     };
   }, [user]);
 
-  const handleLogout = () => {
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleLogoutClick = () => setShowConfirm(true);
+  const handleCancel = () => setShowConfirm(false);
+  const handleConfirm = () => {
+    setShowConfirm(false);
     signOut(auth);
   };
 
@@ -79,13 +84,26 @@ export default function ProfilePage() {
             <div className="text-sm text-green-300">Your Lodu Chat stats</div>
           </div>
         </div>
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-mono text-sm"
-        >
-          Logout
-        </button>
+        {user && (
+          <button
+            onClick={handleLogoutClick}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-mono text-sm"
+          >
+            Logout
+          </button>
+        )}
       </div>
+      {showConfirm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+          <div className="bg-gray-900 border border-red-600 rounded-lg p-8 text-center">
+            <div className="mb-4 text-lg text-white">Are you sure you want to logout?</div>
+            <div className="flex justify-center gap-4">
+              <button onClick={handleConfirm} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Yes, Logout</button>
+              <button onClick={handleCancel} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* User Info Card */}
       <div className="bg-gray-900 border border-green-400 rounded-lg p-6 mb-6">
