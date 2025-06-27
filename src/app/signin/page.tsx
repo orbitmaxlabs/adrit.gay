@@ -58,13 +58,13 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#ff00c8] via-[#00ffea] to-[#fff200] font-mono">
-      <div className="bg-black/80 rounded-2xl shadow-2xl p-8 border-8 border-[#fff200] flex flex-col items-center">
-        <h1 className="text-4xl text-[#fff200] font-extrabold mb-4 tracking-widest drop-shadow-lg">LODU CHAT</h1>
-        <p className="text-center text-[#00ffea] mb-8 text-lg font-bold">Sign in to join the chat!</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#ff00c8] via-[#00ffea] to-[#fff200] font-mono mobile-safe-top mobile-safe-bottom mobile-safe-left mobile-safe-right">
+      <div className="bg-black/80 rounded-2xl shadow-2xl p-6 sm:p-8 border-4 sm:border-8 border-[#fff200] flex flex-col items-center mx-4 max-w-sm sm:max-w-md w-full">
+        <h1 className="text-2xl sm:text-4xl text-[#fff200] font-extrabold mb-4 tracking-widest drop-shadow-lg text-center">LODU CHAT</h1>
+        <p className="text-center text-[#00ffea] mb-6 sm:mb-8 text-base sm:text-lg font-bold">Sign in to join the chat!</p>
         
         {error && (
-          <div className="mb-4 p-3 bg-red-900/50 border border-red-400 rounded text-red-300 text-sm">
+          <div className="mb-4 p-3 bg-red-900/50 border border-red-400 rounded text-red-300 text-sm w-full">
             {error}
           </div>
         )}
@@ -72,7 +72,7 @@ export default function SignInPage() {
         <button
           onClick={handleSignIn}
           disabled={isLoading}
-          className="bg-[#00ffea] text-black font-bold border-4 border-[#ff00c8] rounded-lg shadow-lg px-8 py-4 text-2xl mb-4 hover:bg-[#ff00c8] hover:text-white transition-all duration-200 cursor-pointer font-mono tracking-widest outline-dashed outline-2 outline-offset-2 outline-[#00ffea] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full touch-target bg-[#00ffea] text-black font-bold border-4 border-[#ff00c8] rounded-lg shadow-lg px-6 sm:px-8 py-3 sm:py-4 text-lg sm:text-2xl mb-4 hover:bg-[#ff00c8] hover:text-white transition-all duration-200 cursor-pointer font-mono tracking-widest outline-dashed outline-2 outline-offset-2 outline-[#00ffea] disabled:opacity-50 disabled:cursor-not-allowed mobile-tap"
         >
           {isLoading ? "Signing in..." : "Sign in with Google"}
         </button>

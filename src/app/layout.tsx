@@ -2,7 +2,6 @@
 import "./globals.css";
 import { usePathname } from "next/navigation";
 import { AuthProvider } from "./auth-context";
-import BottomNav from "../components/BottomNav";
 
 export default function RootLayout({
   children,
@@ -10,7 +9,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const showBottomNav = !["/signin", "/login"].includes(pathname);
 
   return (
     <html lang="en">
@@ -24,10 +22,13 @@ export default function RootLayout({
         <meta name="creator" content="Lodu Chat" />
         <meta name="publisher" content="Lodu Chat" />
         
-        {/* Viewport and Responsive Design */}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+        {/* Enhanced Mobile Viewport and Responsive Design */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover, shrink-to-fit=no" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Lodu Chat" />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
@@ -66,9 +67,6 @@ export default function RootLayout({
         <meta name="msapplication-config" content="/browserconfig.xml" />
         
         {/* Apple Specific */}
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Lodu Chat" />
         <meta name="apple-itunes-app" content="app-argument=lodu-chat" />
         
         {/* Favicon and Icons */}
@@ -133,10 +131,7 @@ export default function RootLayout({
       </head>
       <body className="font-mono antialiased" style={{ fontFamily: '"Press Start 2P", "VT323", "Courier New", Courier, monospace' }}>
         <AuthProvider>
-          <div className={showBottomNav ? "pb-24" : ""}>
-            {children}
-          </div>
-          {showBottomNav && <BottomNav />}
+          {children}
         </AuthProvider>
       </body>
     </html>

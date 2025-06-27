@@ -25,22 +25,141 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Press Start 2P', 'VT323', 'Courier New', Courier, monospace;
+  /* Mobile-specific improvements */
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overscroll-behavior: none;
 }
 
-/* Retro scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+/* Mobile-specific safe area handling */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
 }
 
-::-webkit-scrollbar-track {
-  background: #000000;
+/* Mobile viewport improvements */
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  body {
+    font-size: 14px;
+    line-height: 1.4;
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  background: #00ff00;
-  border-radius: 4px;
+/* Touch-friendly button improvements */
+@media (hover: none) and (pointer: coarse) {
+  button, 
+  [role="button"],
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #00cc00;
+/* Mobile-specific scrollbar */
+@media screen and (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 2px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00cc00;
+  }
+}
+
+/* Desktop scrollbar */
+@media screen and (min-width: 769px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #00cc00;
+  }
+}
+
+/* Mobile-specific utility classes */
+@layer utilities {
+  .mobile-safe-top {
+    padding-top: max(0px, env(safe-area-inset-top));
+  }
+  
+  .mobile-safe-bottom {
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+  
+  .mobile-safe-left {
+    padding-left: max(0px, env(safe-area-inset-left));
+  }
+  
+  .mobile-safe-right {
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+  
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .mobile-text {
+    font-size: 16px;
+  }
+  
+  .mobile-input {
+    font-size: 16px;
+    min-height: 44px;
+  }
+}
+
+/* Mobile-specific animations */
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-tap {
+    transition: transform 0.1s ease-out;
+  }
+  
+  .mobile-tap:active {
+    transform: scale(0.95);
+  }
+}
+
+/* Mobile-specific focus styles */
+@media (hover: none) and (pointer: coarse) {
+  .mobile-focus:focus {
+    outline: 2px solid #00ff00;
+    outline-offset: 2px;
+  }
 }

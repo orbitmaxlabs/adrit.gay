@@ -8,6 +8,7 @@ import { auth } from "../firebase";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Image from "next/image";
 import { Fragment } from "react";
+import { useRouter } from "next/navigation";
 
 const predefinedMessages = [
   "Bhai tu toh lodu hai! 😂",
@@ -26,6 +27,7 @@ const reactions = ["😂", "🤦‍♂️", "💀", "😤", "🤪", "🤔", "�
 
 export default function Home() {
   const user = useAuth();
+  const router = useRouter();
   const [messages, setMessages] = useState<any[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
@@ -116,38 +118,70 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-green-400 p-0 m-0 w-full">
-      {/* Fixed Top Bar */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-black p-4 border-b border-green-400 flex justify-between items-center">
-        <div className="font-bold text-2xl text-yellow-400 tracking-widest">Lodu Chat</div>
-        <div className="text-green-300 font-mono text-lg">Online: {onlineUsers.length}</div>
+    <div className="min-h-screen bg-black text-green-400 p-0 m-0 w-full mobile-safe-left mobile-safe-right">
+      {/* Fixed Top Bar - Mobile Optimized with Navigation */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-black mobile-safe-top mobile-safe-left mobile-safe-right">
+        <div className="px-4 py-3 sm:py-4 border-b border-green-400 flex justify-between items-center">
+          <div className="font-bold text-lg sm:text-2xl text-yellow-400 tracking-widest">Lodu Chat</div>
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="text-green-300 font-mono text-sm sm:text-lg">Online: {onlineUsers.length}</div>
+            <button
+              onClick={() => router.push('/notifications')}
+              className="touch-target bg-pink-600 hover:bg-pink-700 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-full font-bold shadow-lg border border-pink-400 mobile-tap text-sm sm:text-base"
+              title="Activity"
+            >
+              🔔
+            </button>
+            <button
+              onClick={() => router.push('/profile')}
+              className="touch-target bg-cyan-600 hover:bg-cyan-700 text-white px-2 sm:px-3 py-1 sm:py-2 rounded-full font-bold shadow-lg border border-cyan-400 mobile-tap text-sm sm:text-base"
+              title="Profile"
+            >
+              {user.photoURL ? (
+                <Image 
+                  src={user.photoURL} 
+                  alt="Profile" 
+                  width={20} 
+                  height={20} 
+                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border border-white object-cover" 
+                />
+              ) : (
+                "👤"
+              )}
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Persistent Green Border Chat Container */}
-      <div className="fixed left-0 right-0 z-30 px-4" style={{ top: '72px', bottom: '198px' }}>
-        <div className="h-full border border-green-400 rounded-t-lg p-4 bg-gray-900 flex flex-col">
-          {/* Only this inner div scrolls */}
+      {/* Chat Container - Mobile Optimized */}
+      <div className="fixed left-0 right-0 z-30 mobile-safe-left mobile-safe-right" 
+           style={{ 
+             top: 'calc(env(safe-area-inset-top, 0px) + 60px)', 
+             bottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)' 
+           }}>
+        <div className="h-full mx-2 sm:mx-4 border border-green-400 rounded-t-lg p-2 sm:p-4 bg-gray-900 flex flex-col">
+          {/* Scrollable chat area */}
           <div ref={chatScrollRef} className="flex-1 overflow-y-auto">
             {messages.map((message) => (
-              <div key={message.id} className="mb-4">
-                <div className="flex items-start space-x-3">
+              <div key={message.id} className="mb-3 sm:mb-4">
+                <div className="flex items-start space-x-2 sm:space-x-3">
                   {message.userPhoto && (
                     <Image 
                       src={message.userPhoto} 
                       alt="User" 
                       width={32}
                       height={32}
-                      className="w-8 h-8 rounded-full border border-green-400"
+                      className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border border-green-400 flex-shrink-0"
                     />
                   )}
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="font-bold text-yellow-400">{message.userName}</span>
-                      <span className="text-xs text-gray-400">
+                      <span className="font-bold text-yellow-400 text-sm sm:text-base truncate">{message.userName}</span>
+                      <span className="text-xs text-gray-400 flex-shrink-0">
                         {message.timestamp?.toDate?.()?.toLocaleTimeString() || "now"}
                       </span>
                     </div>
-                    <div className={`text-lg ${message.type === "reaction" ? "text-2xl" : ""}`}>
+                    <div className={`text-sm sm:text-lg break-words ${message.type === "reaction" ? "text-xl sm:text-2xl" : ""}`}>
                       {message.text}
                     </div>
                   </div>
@@ -158,82 +192,87 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Fixed Message Input Bar above BottomNav */}
-      <div className="fixed left-0 right-0 z-50 bg-[#1a2e05] border-t-4 border-[#fff200] p-4 flex items-end gap-2 shadow-2xl rounded-t-xl mb-16" style={{ bottom: '64px', height: '64px' }}>
-        {/* Gaali Button */}
-        <div className="relative">
-          <button
-            onClick={() => setShowGaali((v) => !v)}
-            className="bg-pink-700 hover:bg-pink-600 text-white px-3 py-2 rounded-full font-bold shadow-lg border-2 border-pink-400"
-            title="Send Gaali"
-          >
-            🤬
-          </button>
-          {showGaali && (
-            <div className="absolute bottom-12 left-0 bg-gray-900 border border-pink-400 rounded-lg p-3 w-64 z-50 shadow-xl">
-              <div className="grid grid-cols-1 gap-2">
-                {predefinedMessages.map((message, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => { sendMessage(message); setShowGaali(false); }}
-                    className="w-full px-3 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 text-left font-mono text-sm"
-                  >
-                    {message}
-                  </button>
-                ))}
+      {/* Message Input Bar - Mobile Optimized */}
+      <div className="fixed left-0 right-0 z-50 bg-[#1a2e05] border-t-4 border-[#fff200] mobile-safe-left mobile-safe-right mobile-safe-bottom" 
+           style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 0px)' }}>
+        <div className="p-3 sm:p-4 flex items-end gap-2 shadow-2xl rounded-t-xl">
+          {/* Gaali Button - Mobile Optimized */}
+          <div className="relative">
+            <button
+              onClick={() => setShowGaali((v) => !v)}
+              className="touch-target bg-pink-700 hover:bg-pink-600 text-white px-3 py-2 rounded-full font-bold shadow-lg border-2 border-pink-400 mobile-tap"
+              title="Send Gaali"
+            >
+              🤬
+            </button>
+            {showGaali && (
+              <div className="absolute bottom-12 left-0 bg-gray-900 border border-pink-400 rounded-lg p-3 w-64 sm:w-80 z-50 shadow-xl max-h-60 overflow-y-auto">
+                <div className="grid grid-cols-1 gap-2">
+                  {predefinedMessages.map((message, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => { sendMessage(message); setShowGaali(false); }}
+                      className="w-full px-3 py-2 touch-target bg-pink-600 text-white rounded hover:bg-pink-700 text-left font-mono text-sm mobile-tap"
+                    >
+                      {message}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-        {/* Reactions Button */}
-        <div className="relative">
-          <button
-            onClick={() => setShowReactions((v) => !v)}
-            className="bg-cyan-700 hover:bg-cyan-600 text-white px-3 py-2 rounded-full font-bold shadow-lg border-2 border-cyan-400"
-            title="Send Reaction"
-          >
-            😎
-          </button>
-          {showReactions && (
-            <div className="absolute bottom-12 left-0 bg-gray-900 border border-cyan-400 rounded-lg p-3 w-64 z-50 shadow-xl">
-              <div className="grid grid-cols-5 gap-2">
-                {reactions.map((reaction, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => { sendReaction(reaction); setShowReactions(false); }}
-                    className="px-2 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 text-2xl"
-                  >
-                    {reaction}
-                  </button>
-                ))}
+            )}
+          </div>
+          
+          {/* Reactions Button - Mobile Optimized */}
+          <div className="relative">
+            <button
+              onClick={() => setShowReactions((v) => !v)}
+              className="touch-target bg-cyan-700 hover:bg-cyan-600 text-white px-3 py-2 rounded-full font-bold shadow-lg border-2 border-cyan-400 mobile-tap"
+              title="Send Reaction"
+            >
+              😎
+            </button>
+            {showReactions && (
+              <div className="absolute bottom-12 left-0 bg-gray-900 border border-cyan-400 rounded-lg p-3 w-64 sm:w-80 z-50 shadow-xl">
+                <div className="grid grid-cols-5 gap-2">
+                  {reactions.map((reaction, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => { sendReaction(reaction); setShowReactions(false); }}
+                      className="touch-target px-2 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 text-xl sm:text-2xl mobile-tap"
+                    >
+                      {reaction}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-        {/* Message Input */}
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            if (input.trim()) sendMessage(input.trim());
-            setInput("");
-          }}
-          className="flex-1 flex items-center gap-2"
-        >
-          <input
-            type="text"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder="Type your jungle gaali... Use @ to tag!"
-            className="flex-1 px-4 py-3 rounded-full bg-[#223a0a] border-2 border-[#fff200] text-yellow-200 placeholder:text-green-400 font-mono focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-lg"
-            maxLength={300}
-          />
-          <button
-            type="submit"
-            className="ml-2 px-5 py-3 rounded-full bg-[#fff200] text-black font-bold shadow-lg hover:bg-yellow-300 border-2 border-yellow-400"
+            )}
+          </div>
+          
+          {/* Message Input - Mobile Optimized */}
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              if (input.trim()) sendMessage(input.trim());
+              setInput("");
+            }}
+            className="flex-1 flex items-center gap-2"
           >
-            Send
-          </button>
-        </form>
+            <input
+              type="text"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              placeholder="Type your jungle gaali... Use @ to tag!"
+              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 rounded-full bg-[#223a0a] border-2 border-[#fff200] text-yellow-200 placeholder:text-green-400 font-mono focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-lg mobile-input"
+              maxLength={300}
+            />
+            <button
+              type="submit"
+              className="ml-2 px-4 sm:px-5 py-2 sm:py-3 rounded-full bg-[#fff200] text-black font-bold shadow-lg hover:bg-yellow-300 border-2 border-yellow-400 touch-target mobile-tap"
+            >
+              Send
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
