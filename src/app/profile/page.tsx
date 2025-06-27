@@ -24,6 +24,7 @@ export default function ProfilePage() {
   const [editPhoto, setEditPhoto] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -82,8 +83,6 @@ export default function ProfilePage() {
   if (!user) {
     return <LoadingSpinner message="Loading profile..." />;
   }
-
-  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleLogoutClick = () => setShowConfirm(true);
   const handleCancel = () => setShowConfirm(false);
@@ -256,7 +255,9 @@ export default function ProfilePage() {
             <div className="mb-4 flex flex-col items-center">
               <label className="mb-2 text-green-300">Profile Picture</label>
               <input type="file" accept="image/*" onChange={handlePhotoChange} className="mb-2" />
-              {editPhoto && <img src={URL.createObjectURL(editPhoto)} alt="Preview" className="w-20 h-20 rounded-full border-2 border-yellow-400" />}
+              {editPhoto && (
+                <Image src={URL.createObjectURL(editPhoto)} alt="Preview" width={80} height={80} className="w-20 h-20 rounded-full border-2 border-yellow-400" />
+              )}
             </div>
             <div className="mb-4">
               <label className="block mb-1 text-green-300">Username</label>

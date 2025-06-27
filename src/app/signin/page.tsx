@@ -78,7 +78,7 @@ export default function SignInPage() {
         </button>
         
         <div className="text-xs text-[#00ffea]/70 text-center">
-          <p>Make sure you're using a supported browser</p>
+          <p>Make sure you&apos;re using a supported browser</p>
           <p>and have JavaScript enabled</p>
         </div>
       </div>

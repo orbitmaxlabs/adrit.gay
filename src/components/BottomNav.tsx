@@ -1,6 +1,7 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../app/auth-context";
+import Image from "next/image";
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -14,7 +15,7 @@ export default function BottomNav() {
     { path: "/", label: "Home", icon: "🏠" },
     { path: "/notifications", label: "Activity", icon: "🔔" },
     { path: "/profile", label: "Profile", icon: user && user.photoURL ? (
-      <img src={user.photoURL} alt="Profile" className="w-7 h-7 rounded-full border-2 border-[#fff200] object-cover" />
+      <Image src={user.photoURL} alt="Profile" width={28} height={28} className="w-7 h-7 rounded-full border-2 border-[#fff200] object-cover" />
     ) : "👤" },
   ];
 
