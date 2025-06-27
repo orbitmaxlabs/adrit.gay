@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "./auth-context";
 import { db } from "../firebase";
 import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "firebase/firestore";
@@ -7,6 +7,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Image from "next/image";
+import { Fragment } from "react";
 
 const predefinedMessages = [
   "Bhai tu toh lodu hai! 😂",
@@ -28,6 +29,10 @@ export default function Home() {
   const [messages, setMessages] = useState<any[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<string>("");
+  const [showGaali, setShowGaali] = useState(false);
+  const [showReactions, setShowReactions] = useState(false);
+  const [input, setInput] = useState("");
+  const chatScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -61,6 +66,12 @@ export default function Home() {
       usersUnsubscribe();
     };
   }, [user]);
+
+  useEffect(() => {
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const sendMessage = async (text: string) => {
     if (!user) return;
@@ -105,123 +116,124 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-green-400 p-4">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6 border-b border-green-400 pb-4">
-        <div className="flex items-center space-x-3">
-          {user.photoURL && (
-            <Image 
-              src={user.photoURL} 
-              alt="Profile" 
-              width={40}
-              height={40}
-              className="w-10 h-10 rounded-full border-2 border-green-400"
-            />
-          )}
-          <div>
-            <div className="font-bold text-lg">{user.displayName || user.email}</div>
-            <div className="text-sm text-green-300">Online</div>
-          </div>
-        </div>
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-mono text-sm"
-        >
-          Logout
-        </button>
+    <div className="min-h-screen bg-black text-green-400 p-0 m-0 w-full">
+      {/* Fixed Top Bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-black p-4 border-b border-green-400 flex justify-between items-center">
+        <div className="font-bold text-2xl text-yellow-400 tracking-widest">Lodu Chat</div>
+        <div className="text-green-300 font-mono text-lg">Online: {onlineUsers.length}</div>
       </div>
 
-      {/* Online Users */}
-      <div className="mb-6">
-        <h3 className="text-lg font-bold mb-3 text-yellow-400">Online Users ({onlineUsers.length})</h3>
-        <div className="flex flex-wrap gap-2">
-          {onlineUsers.map((onlineUser) => (
-            <button
-              key={onlineUser.id}
-              onClick={() => setSelectedUser(onlineUser.userName)}
-              className={`px-3 py-1 rounded-full text-sm border transition-all ${
-                selectedUser === onlineUser.userName
-                  ? "bg-green-400 text-black border-green-400"
-                  : "border-green-400 text-green-400 hover:bg-green-400 hover:text-black"
-              }`}
-            >
-              {onlineUser.userName}
-            </button>
-          ))}
-        </div>
-        {selectedUser && (
-          <div className="mt-2 text-sm text-yellow-400">
-            Tagging: @{selectedUser}
-            <button
-              onClick={() => setSelectedUser("")}
-              className="ml-2 text-red-400 hover:text-red-300"
-            >
-              ✕
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Chat Messages */}
-      <div className="mb-6 h-96 overflow-y-auto border border-green-400 rounded-lg p-4 bg-gray-900">
-        {messages.map((message) => (
-          <div key={message.id} className="mb-4">
-            <div className="flex items-start space-x-3">
-              {message.userPhoto && (
-                <Image 
-                  src={message.userPhoto} 
-                  alt="User" 
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 rounded-full border border-green-400"
-                />
-              )}
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-1">
-                  <span className="font-bold text-yellow-400">{message.userName}</span>
-                  <span className="text-xs text-gray-400">
-                    {message.timestamp?.toDate?.()?.toLocaleTimeString() || "now"}
-                  </span>
-                </div>
-                <div className={`text-lg ${message.type === "reaction" ? "text-2xl" : ""}`}>
-                  {message.text}
+      {/* Persistent Green Border Chat Container */}
+      <div className="fixed left-0 right-0 z-30 px-4" style={{ top: '72px', bottom: '198px' }}>
+        <div className="h-full border border-green-400 rounded-t-lg p-4 bg-gray-900 flex flex-col">
+          {/* Only this inner div scrolls */}
+          <div ref={chatScrollRef} className="flex-1 overflow-y-auto">
+            {messages.map((message) => (
+              <div key={message.id} className="mb-4">
+                <div className="flex items-start space-x-3">
+                  {message.userPhoto && (
+                    <Image 
+                      src={message.userPhoto} 
+                      alt="User" 
+                      width={32}
+                      height={32}
+                      className="w-8 h-8 rounded-full border border-green-400"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="font-bold text-yellow-400">{message.userName}</span>
+                      <span className="text-xs text-gray-400">
+                        {message.timestamp?.toDate?.()?.toLocaleTimeString() || "now"}
+                      </span>
+                    </div>
+                    <div className={`text-lg ${message.type === "reaction" ? "text-2xl" : ""}`}>
+                      {message.text}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      {/* Predefined Messages */}
-      <div className="mb-6">
-        <h3 className="text-lg font-bold mb-3 text-pink-400">Send Gaali</h3>
-        <div className="grid grid-cols-2 gap-2">
-          {predefinedMessages.map((message, index) => (
-            <button
-              key={index}
-              onClick={() => sendMessage(message)}
-              className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors font-mono text-sm text-center"
-            >
-              {message}
-            </button>
-          ))}
         </div>
       </div>
 
-      {/* Reactions */}
-      <div className="mb-6">
-        <h3 className="text-lg font-bold mb-3 text-cyan-400">Send Reactions</h3>
-        <div className="grid grid-cols-5 gap-2">
-          {reactions.map((reaction, index) => (
-            <button
-              key={index}
-              onClick={() => sendReaction(reaction)}
-              className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors text-2xl"
-            >
-              {reaction}
-            </button>
-          ))}
+      {/* Fixed Message Input Bar above BottomNav */}
+      <div className="fixed left-0 right-0 z-50 bg-[#1a2e05] border-t-4 border-[#fff200] p-4 flex items-end gap-2 shadow-2xl rounded-t-xl mb-16" style={{ bottom: '64px', height: '64px' }}>
+        {/* Gaali Button */}
+        <div className="relative">
+          <button
+            onClick={() => setShowGaali((v) => !v)}
+            className="bg-pink-700 hover:bg-pink-600 text-white px-3 py-2 rounded-full font-bold shadow-lg border-2 border-pink-400"
+            title="Send Gaali"
+          >
+            🤬
+          </button>
+          {showGaali && (
+            <div className="absolute bottom-12 left-0 bg-gray-900 border border-pink-400 rounded-lg p-3 w-64 z-50 shadow-xl">
+              <div className="grid grid-cols-1 gap-2">
+                {predefinedMessages.map((message, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => { sendMessage(message); setShowGaali(false); }}
+                    className="w-full px-3 py-2 bg-pink-600 text-white rounded hover:bg-pink-700 text-left font-mono text-sm"
+                  >
+                    {message}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+        {/* Reactions Button */}
+        <div className="relative">
+          <button
+            onClick={() => setShowReactions((v) => !v)}
+            className="bg-cyan-700 hover:bg-cyan-600 text-white px-3 py-2 rounded-full font-bold shadow-lg border-2 border-cyan-400"
+            title="Send Reaction"
+          >
+            😎
+          </button>
+          {showReactions && (
+            <div className="absolute bottom-12 left-0 bg-gray-900 border border-cyan-400 rounded-lg p-3 w-64 z-50 shadow-xl">
+              <div className="grid grid-cols-5 gap-2">
+                {reactions.map((reaction, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => { sendReaction(reaction); setShowReactions(false); }}
+                    className="px-2 py-2 bg-cyan-600 text-white rounded hover:bg-cyan-700 text-2xl"
+                  >
+                    {reaction}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        {/* Message Input */}
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            if (input.trim()) sendMessage(input.trim());
+            setInput("");
+          }}
+          className="flex-1 flex items-center gap-2"
+        >
+          <input
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Type your jungle gaali... Use @ to tag!"
+            className="flex-1 px-4 py-3 rounded-full bg-[#223a0a] border-2 border-[#fff200] text-yellow-200 placeholder:text-green-400 font-mono focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-lg"
+            maxLength={300}
+          />
+          <button
+            type="submit"
+            className="ml-2 px-5 py-3 rounded-full bg-[#fff200] text-black font-bold shadow-lg hover:bg-yellow-300 border-2 border-yellow-400"
+          >
+            Send
+          </button>
+        </form>
       </div>
     </div>
   );

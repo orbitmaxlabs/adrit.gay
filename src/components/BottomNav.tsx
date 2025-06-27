@@ -13,7 +13,9 @@ export default function BottomNav() {
   const navItems = [
     { path: "/", label: "Home", icon: "🏠" },
     { path: "/notifications", label: "Activity", icon: "🔔" },
-    { path: "/profile", label: "Profile", icon: "👤" },
+    { path: "/profile", label: "Profile", icon: user && user.photoURL ? (
+      <img src={user.photoURL} alt="Profile" className="w-7 h-7 rounded-full border-2 border-[#fff200] object-cover" />
+    ) : "👤" },
   ];
 
   return (
@@ -36,7 +38,7 @@ export default function BottomNav() {
                 }`}
                 aria-label={item.label}
               >
-                <span className="text-2xl filter drop-shadow-lg">{item.icon}</span>
+                <span className="text-2xl filter drop-shadow-lg flex items-center justify-center">{item.icon}</span>
                 <span className={`text-xs font-bold tracking-wider ${isActive ? "text-black" : ""}`}>{item.label}</span>
                 {isActive && (
                   <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-[#fff200] rounded-full animate-pulse"></div>
