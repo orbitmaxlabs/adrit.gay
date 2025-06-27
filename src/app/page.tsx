@@ -9,6 +9,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import Image from "next/image";
 import { Fragment } from "react";
 import { useRouter } from "next/navigation";
+import { uploadToCloudinary } from "../cloudinary";
 
 const predefinedMessages = [
   "Bhai tu toh lodu hai! 😂",
@@ -34,6 +35,9 @@ export default function Home() {
   const [showGaali, setShowGaali] = useState(false);
   const [showReactions, setShowReactions] = useState(false);
   const [input, setInput] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -107,6 +111,59 @@ export default function Home() {
     });
     
     setSelectedUser("");
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      
+      const chunks: Blob[] = [];
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        setAudioBlob(blob);
+      };
+      
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Error starting recording:', error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const sendAudioMessage = async () => {
+    if (!audioBlob || !user) return;
+    
+    try {
+      const file = new File([audioBlob], 'audio-message.webm', { type: 'audio/webm' });
+      
+      // Upload audio file to Cloudinary
+      const uploadResult = await uploadToCloudinary(file, 'audio-messages');
+      
+      // Save to Firestore
+      await addDoc(collection(db, "messages"), {
+        text: "🎵 Audio Message",
+        audioURL: uploadResult.url,
+        userId: user.uid,
+        userName: user.displayName || user.email,
+        userPhoto: user.photoURL,
+        timestamp: serverTimestamp(),
+        type: "audio"
+      });
+      
+      setAudioBlob(null);
+    } catch (error) {
+      console.error('Error sending audio:', error);
+    }
   };
 
   const handleLogout = () => {
@@ -184,6 +241,12 @@ export default function Home() {
                     <div className={`text-sm sm:text-lg break-words ${message.type === "reaction" ? "text-xl sm:text-2xl" : ""}`}>
                       {message.text}
                     </div>
+                    {message.type === "audio" && message.audioURL && (
+                      <audio controls className="mt-2 w-full max-w-xs">
+                        <source src={message.audioURL} type="audio/webm" />
+                        Your browser does not support the audio element.
+                      </audio>
+                    )}
                   </div>
                 </div>
               </div>
@@ -196,6 +259,26 @@ export default function Home() {
       <div className="fixed left-0 right-0 z-50 bg-[#1a2e05] border-t-4 border-[#fff200] mobile-safe-left mobile-safe-right mobile-safe-bottom" 
            style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 0px)' }}>
         <div className="p-3 sm:p-4 flex items-end gap-2 shadow-2xl rounded-t-xl">
+          {/* Audio Recording Button */}
+          <button
+            onClick={isRecording ? stopRecording : startRecording}
+            className="touch-target bg-purple-700 hover:bg-purple-600 text-white px-3 py-2 rounded-full font-bold shadow-lg border-2 border-purple-400 mobile-tap"
+            title={isRecording ? "Stop Recording" : "Record Audio"}
+          >
+            {isRecording ? "⏹️" : "🎤"}
+          </button>
+
+          {/* Send Audio Button */}
+          {audioBlob && (
+            <button
+              onClick={sendAudioMessage}
+              className="touch-target bg-green-700 hover:bg-green-600 text-white px-3 py-2 rounded-full font-bold shadow-lg border-2 border-green-400 mobile-tap"
+              title="Send Audio"
+            >
+              🎵
+            </button>
+          )}
+
           {/* Gaali Button - Mobile Optimized */}
           <div className="relative">
             <button

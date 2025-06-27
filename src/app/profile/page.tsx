@@ -9,6 +9,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import Image from "next/image";
 import { doc, updateDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { uploadToCloudinary } from "../../cloudinary";
 
 export default function ProfilePage() {
   const user = useAuth();
@@ -104,20 +105,27 @@ export default function ProfilePage() {
     if (!user) return;
     setSaving(true);
     setError("");
+    
     try {
-      // Update displayName and photoURL
-      if (editName !== user.displayName || editPhoto) {
-        let photoURL = user.photoURL;
-        if (editPhoto) {
-          // Upload to Firebase Storage (optional: implement this if you want real uploads)
-          // For now, just use a local URL for preview
-          photoURL = URL.createObjectURL(editPhoto);
-        }
-        await updateProfile(user, { displayName: editName, photoURL });
+      let photoURL = user.photoURL;
+      
+      if (editPhoto) {
+        // Upload to Cloudinary
+        const uploadResult = await uploadToCloudinary(editPhoto, 'profile-photos');
+        photoURL = uploadResult.url;
       }
-      // Update tagline in Firestore
+      
+      // Update profile
+      await updateProfile(user, { displayName: editName, photoURL });
+      
+      // Update Firestore
       const userRef = doc(db, "users", user.uid);
-      await updateDoc(userRef, { tagline: editTagline, displayName: editName });
+      await updateDoc(userRef, { 
+        tagline: editTagline, 
+        displayName: editName,
+        photoURL: photoURL 
+      });
+      
       setShowEdit(false);
     } catch (err: any) {
       setError(err.message || "Failed to update profile");
